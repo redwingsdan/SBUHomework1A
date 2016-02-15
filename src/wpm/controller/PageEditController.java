@@ -135,7 +135,7 @@ public class PageEditController {
 	    }
 	}
     }
-
+    
     /**
      * This function provides a response to when the user changes the CSS
      * content. It responds but updating the data manager with the new CSS text,

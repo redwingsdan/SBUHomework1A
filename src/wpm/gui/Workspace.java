@@ -21,18 +21,26 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import properties_manager.PropertiesManager;
 import saf.ui.AppGUI;
 import wpm.data.HTMLTagPrototype;
 import saf.AppTemplate;
 import saf.components.AppWorkspaceComponent;
+import static saf.settings.AppPropertyType.REMOVE_ICON;
+import static saf.settings.AppStartupConstants.FILE_PROTOCOL;
+import static saf.settings.AppStartupConstants.PATH_IMAGES;
 import wpm.PropertyType;
 import static wpm.PropertyType.TEMP_PAGE_LOAD_ERROR_MESSAGE;
 import static wpm.PropertyType.TEMP_PAGE_LOAD_ERROR_TITLE;
@@ -50,7 +58,7 @@ import static wpm.file.FileManager.TEMP_PAGE;
  * the user interface controls for editing work.
  *
  * @author Richard McKenna
- * @author ?
+ * @author Daniel Peterson
  * @version 1.0
  */
 public class Workspace extends AppWorkspaceComponent {
@@ -61,6 +69,7 @@ public class Workspace extends AppWorkspaceComponent {
     static final String CLASS_TAG_BUTTON = "tag_button";
     static final String EMPTY_TEXT = "";
     static final int BUTTON_TAG_WIDTH = 75;
+    static final String CLASS_BORDERED_PANE = "bordered_pane";
 
     // HERE'S THE APP
     AppTemplate app;
@@ -160,6 +169,20 @@ public class Workspace extends AppWorkspaceComponent {
 	dataManager.setHTMLRoot(htmlRoot);
 	dataManager.reset();
 
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+	
+	String icon = REMOVE_ICON.toString();
+        String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
+        Image buttonImage = new Image(imagePath);
+        Button removeButton = new Button();
+        removeButton.setGraphic(new ImageView (buttonImage));
+        tagButtons.add(removeButton);
+        removeButton.setMaxWidth(BUTTON_TAG_WIDTH);
+        removeButton.setMinWidth(BUTTON_TAG_WIDTH);
+        removeButton.setPrefWidth(BUTTON_TAG_WIDTH);
+        tagToolbar.getChildren().add(removeButton);
+
+        
 	// AND NOW USE THE LOADED TAG TYPES TO ADD BUTTONS
 	for (HTMLTagPrototype tag : dataManager.getTags()) {
 	    // MAKE THE BUTTON
@@ -200,9 +223,11 @@ public class Workspace extends AppWorkspaceComponent {
 	Tab htmlTab = new Tab();
 	htmlTab.setText("HTML");
 	htmlTab.setContent(htmlView);
+        htmlTab.setClosable(false);
 
 	// NOW FOR THE CSS
 	Tab cssTab = new Tab();
+        cssTab.setClosable(false);
 	cssTab.setText("CSS");
 	cssTab.setContent(cssEditor);
 	rightPane.getTabs().add(htmlTab);

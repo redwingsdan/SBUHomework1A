@@ -5,7 +5,7 @@
     order to be rendered using those properties.
 
     Author:	Richard McKenna
-    Author:	?
+    Author:	Daniel Peterson
     Version:	1.0
 */
 
@@ -27,7 +27,6 @@
 .max_pane {
     -fx-fit-to-height: true;
     -fx-fit-to-width: true;
-    -fx-background-color:#ccccff;
 }
 
 .heading_label {
@@ -51,3 +50,11 @@
 .prompt_text_field {
     -fx-font-size: 13pt;
 }
+
+.bordered_pane {
+    -fx-background-color:#bbbbff;
+    /*-fx-background-color: rgba(200, 255, 200, 0);*/
+    -fx-border-color: #5555ff;
+    -fx-padding: 10 20 10 20;
+}
+
