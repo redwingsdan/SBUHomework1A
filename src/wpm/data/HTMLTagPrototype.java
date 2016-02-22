@@ -140,6 +140,14 @@ public class HTMLTagPrototype implements Comparable<HTMLTagPrototype>, Cloneable
     }
     
     /**
+     * Remove attribute
+     */
+    public void removeAttribute(String name, String value)
+    {
+        attributes.remove(name, value);
+    }
+    
+    /**
      * Accessor method for getting an attribute for this tag.
      * 
      * @param name The name of the attribute to get.

@@ -17,6 +17,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
@@ -170,32 +171,42 @@ public class Workspace extends AppWorkspaceComponent {
 	dataManager.reset();
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-	
-	String icon = REMOVE_ICON.toString();
-        String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
-        Image buttonImage = new Image(imagePath);
         Button removeButton = new Button();
-        removeButton.setGraphic(new ImageView (buttonImage));
-        tagButtons.add(removeButton);
-        removeButton.setMaxWidth(BUTTON_TAG_WIDTH);
-        removeButton.setMinWidth(BUTTON_TAG_WIDTH);
-        removeButton.setPrefWidth(BUTTON_TAG_WIDTH);
-        tagToolbar.getChildren().add(removeButton);
-
-        
+	
 	// AND NOW USE THE LOADED TAG TYPES TO ADD BUTTONS
 	for (HTMLTagPrototype tag : dataManager.getTags()) {
 	    // MAKE THE BUTTON
-	    Button tagButton = new Button(tag.getTagName());
-	    tagButtons.add(tagButton);
-	    tagButton.setMaxWidth(BUTTON_TAG_WIDTH);
-	    tagButton.setMinWidth(BUTTON_TAG_WIDTH);
-	    tagButton.setPrefWidth(BUTTON_TAG_WIDTH);
-	    tagToolbar.getChildren().add(tagButton);
-
+            Button tagButton = new Button(tag.getTagName());
+            if(tag.getTagName().equals("X"))
+            {
+                String icon = REMOVE_ICON.toString();
+                String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
+                Image buttonImage = new Image(imagePath);
+                removeButton.setGraphic(new ImageView (buttonImage));
+                tagButtons.add(removeButton);
+                removeButton.setMaxWidth(BUTTON_TAG_WIDTH);
+                removeButton.setMinWidth(BUTTON_TAG_WIDTH);
+                removeButton.setPrefWidth(BUTTON_TAG_WIDTH);
+                //removeButton.setText("X");
+                tagToolbar.getChildren().add(removeButton); 
+            }          
+            else
+            {
+                tagButtons.add(tagButton);
+                tagButton.setMaxWidth(BUTTON_TAG_WIDTH);
+                tagButton.setMinWidth(BUTTON_TAG_WIDTH);
+                tagButton.setPrefWidth(BUTTON_TAG_WIDTH);
+                tagToolbar.getChildren().add(tagButton);
+            }
 	    // INIT ITS EVENT HANDLER
 	    tagButton.setOnAction(e -> {
 		String tagName = tagButton.getText();
+		HTMLTagPrototype clickedTag = dataManager.getTag(tagName);
+		pageEditController.handleAddElementRequest(clickedTag);
+	    });
+            
+              removeButton.setOnAction(e -> {
+		String tagName = "X";
 		HTMLTagPrototype clickedTag = dataManager.getTag(tagName);
 		pageEditController.handleAddElementRequest(clickedTag);
 	    });
@@ -212,12 +223,17 @@ public class Workspace extends AppWorkspaceComponent {
 	leftPane.setLeft(tagToolbarScrollPane);
 	leftPane.setCenter(treeScrollPane);
 	leftPane.setBottom(tagEditorScrollPane);
+        
+  //      treeScrollPane.setOnAction(e -> {
+  //          System.out.println("Here");
+  //     });
 
 	// NOW FOR THE RIGHT
 	rightPane = new TabPane();
 	htmlView = new WebView();
 	htmlEngine = htmlView.getEngine();
 	cssEditor = new TextArea();
+        rightPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
 	// PUT BOTH ITEMS IN THE TAB PANE
 	Tab htmlTab = new Tab();

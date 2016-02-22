@@ -76,16 +76,27 @@ public class PageEditController {
     public void handleAttributeUpdate(HTMLTagPrototype selectedTag, String attributeName, String attributeValue) {
 	if (enabled) {
 	    try {
-		// FIRST UPDATE THE ELEMENT'S DATA
-		selectedTag.addAttribute(attributeName, attributeValue);
+                if(selectedTag.getTagName() == "")
+                {
+                    selectedTag.removeAttribute(attributeName, attributeValue);
+                    FileManager fileManager = (FileManager) app.getFileComponent();
+                    fileManager.exportData(app.getDataComponent(), TEMP_PAGE);
+                    Workspace workspace = (Workspace) app.getWorkspaceComponent();
+                    workspace.getHTMLEngine().reload();
+                }
+                else
+                {
+                    // FIRST UPDATE THE ELEMENT'S DATA
+                    selectedTag.addAttribute(attributeName, attributeValue);
 
-		// THEN FORCE THE CHANGES TO THE TEMP HTML PAGE
-		FileManager fileManager = (FileManager) app.getFileComponent();
-		fileManager.exportData(app.getDataComponent(), TEMP_PAGE);
+                    // THEN FORCE THE CHANGES TO THE TEMP HTML PAGE
+                    FileManager fileManager = (FileManager) app.getFileComponent();
+                    fileManager.exportData(app.getDataComponent(), TEMP_PAGE);
 
-		// AND FINALLY UPDATE THE WEB PAGE DISPLAY USING THE NEW VALUES
-		Workspace workspace = (Workspace) app.getWorkspaceComponent();
-		workspace.getHTMLEngine().reload();
+                    // AND FINALLY UPDATE THE WEB PAGE DISPLAY USING THE NEW VALUES
+                    Workspace workspace = (Workspace) app.getWorkspaceComponent();
+                    workspace.getHTMLEngine().reload();
+                }
 	    } catch (IOException ioe) {
 		// AN ERROR HAPPENED WRITING TO THE TEMP FILE, NOTIFY THE USER
 		PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -110,17 +121,44 @@ public class PageEditController {
 	    TreeItem selectedItem = (TreeItem) tree.getSelectionModel().getSelectedItem();
 	    HTMLTagPrototype selectedTag = (HTMLTagPrototype) selectedItem.getValue();
 
-	    // MAKE A NEW HTMLTagPrototype AND PUT IT IN A NODE
-	    HTMLTagPrototype newTag = element.clone();
-	    TreeItem newNode = new TreeItem(newTag);
+            HTMLTagPrototype newTag = element.clone();
+            
+            if(element.getTagName().equals("X"))
+            {
+                TreeItem newNode = new TreeItem(selectedTag);
+                selectedItem.getChildren().remove(newNode);
+            }
+            else
+            {
+                // MAKE A NEW HTMLTagPrototype AND PUT IT IN A NODE
+             //   HTMLTagPrototype newTag = element.clone();
+             //   TreeItem newNode = new TreeItem(newTag);
 
-	    // ADD THE NEW NODE
-	    selectedItem.getChildren().add(newNode);
-
-	    // SELECT THE NEW NODE
-	    tree.getSelectionModel().select(newNode);
-	    selectedItem.setExpanded(true);
-
+   
+                // ADD THE NEW NODE
+                //TreeItem newNode2 = new TreeItem(element);
+                TreeItem newNode = new TreeItem(newTag);
+                if(element.getLegalParents().toString().contains(selectedTag.toString()))
+                {
+                    
+                }
+                else
+                {
+                    PropertiesManager props = PropertiesManager.getPropertiesManager();
+                    AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                    dialog.show(props.getProperty(ADD_ELEMENT_ERROR_TITLE), props.getProperty(ADD_ELEMENT_ERROR_MESSAGE));
+                }
+        //        if(newNode.getParent().getValue().equals(selectedItem.getValue()))
+         //       {
+                if(element.getLegalParents().contains(selectedTag))
+                {
+                   selectedItem.getChildren().add(newNode);
+         //       }
+                }
+                // SELECT THE NEW NODE
+                tree.getSelectionModel().select(newNode);
+                selectedItem.setExpanded(true);
+            }
 	    // FORCE A RELOAD OF TAG EDITOR
 	    workspace.reloadWorkspace();
 
