@@ -1,6 +1,7 @@
 package wpm.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.web.WebEngine;
@@ -121,12 +122,26 @@ public class PageEditController {
 	    TreeItem selectedItem = (TreeItem) tree.getSelectionModel().getSelectedItem();
 	    HTMLTagPrototype selectedTag = (HTMLTagPrototype) selectedItem.getValue();
 
+            
+              
             HTMLTagPrototype newTag = element.clone();
             
             if(element.getTagName().equals("X"))
             {
-                TreeItem newNode = new TreeItem(selectedTag);
-                selectedItem.getChildren().remove(newNode);
+                if(selectedTag.getTagName().equals("body") || selectedTag.getTagName().equals("link") || selectedTag.getTagName().equals("head") || selectedTag.getTagName().equals("html") || selectedTag.getTagName().equals("title"))
+                {
+                    //These tags will not be removed
+                }
+                else
+                {
+                //TreeItem newNode = new TreeItem(selectedTag);
+                //selectedItem.getChildren().remove(newNode);
+                    TreeItem parent = (TreeItem) selectedItem.getParent();
+                    selectedItem.getParent().getChildren().remove(selectedItem);
+                    tree.getSelectionModel().select(parent);
+                    selectedItem.setExpanded(true);
+                }
+               // workspace.reloadWorkspace();
             }
             else
             {
@@ -137,8 +152,15 @@ public class PageEditController {
    
                 // ADD THE NEW NODE
                 //TreeItem newNode2 = new TreeItem(element);
+                ArrayList arr = element.getLegalParents();
+                for(int i = 0; i < arr.size(); i++)
+                {
+                    if(arr.get(i).equals(selectedTag.getTagName()))
+                    {
+                          System.out.println("should add because parent");
+               
                 TreeItem newNode = new TreeItem(newTag);
-                if(element.getLegalParents().toString().contains(selectedTag.toString()))
+   /*             if(element.getLegalParents().toString().contains(selectedTag.toString()))
                 {
                     
                 }
@@ -149,15 +171,17 @@ public class PageEditController {
                     dialog.show(props.getProperty(ADD_ELEMENT_ERROR_TITLE), props.getProperty(ADD_ELEMENT_ERROR_MESSAGE));
                 }
         //        if(newNode.getParent().getValue().equals(selectedItem.getValue()))
+     */    //       {
+         //       if(element.getLegalParents().contains(selectedTag))
          //       {
-                if(element.getLegalParents().contains(selectedTag))
-                {
                    selectedItem.getChildren().add(newNode);
          //       }
-                }
+          //      }
                 // SELECT THE NEW NODE
                 tree.getSelectionModel().select(newNode);
                 selectedItem.setExpanded(true);
+                     }
+                }
             }
 	    // FORCE A RELOAD OF TAG EDITOR
 	    workspace.reloadWorkspace();
