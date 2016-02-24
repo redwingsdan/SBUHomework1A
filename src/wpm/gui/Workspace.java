@@ -189,6 +189,20 @@ public class Workspace extends AppWorkspaceComponent {
                 removeButton.setPrefWidth(BUTTON_TAG_WIDTH);
                 //removeButton.setText("X");
                 tagToolbar.getChildren().add(removeButton); 
+                
+                TreeItem selectedItem = (TreeItem) htmlTree.getSelectionModel().getSelectedItem();
+                if (selectedItem != null)
+                {
+                    HTMLTagPrototype selectedTag = (HTMLTagPrototype) selectedItem.getValue();
+                    if(selectedTag.isLegalParent(removeButton.toString()))
+                    {
+                        removeButton.setDisable(false); 
+                    } 
+                    else
+                    {
+                        removeButton.setDisable(true);
+                    }
+                }
             }          
             else
             {
@@ -197,6 +211,20 @@ public class Workspace extends AppWorkspaceComponent {
                 tagButton.setMinWidth(BUTTON_TAG_WIDTH);
                 tagButton.setPrefWidth(BUTTON_TAG_WIDTH);
                 tagToolbar.getChildren().add(tagButton);
+                 
+                TreeItem selectedItem = (TreeItem) htmlTree.getSelectionModel().getSelectedItem();
+                if (selectedItem != null)
+                {              
+                    HTMLTagPrototype selectedTag = (HTMLTagPrototype) selectedItem.getValue();
+                    if(selectedTag.isLegalParent(tagButton.toString()))
+                    {
+                        tagButton.setDisable(false); 
+                    } 
+                    else
+                    {
+                        tagButton.setDisable(true);
+                    }
+                }
             }
 	    // INIT ITS EVENT HANDLER
 	    tagButton.setOnAction(e -> {
@@ -361,6 +389,23 @@ public class Workspace extends AppWorkspaceComponent {
 		HTMLTagPrototype selectedTag = (HTMLTagPrototype) selectedItem.getValue();
 		HashMap<String, String> attributes = selectedTag.getAttributes();
 		Collection<String> keys = attributes.keySet();
+                
+                DataManager dataManager = (DataManager) app.getDataComponent();
+                int i = 0;
+                for (HTMLTagPrototype tag : dataManager.getTags())
+                {
+                    System.out.println(tag.getLegalParents());
+                    System.out.println(selectedTag.getTagName());
+                    if(tag.getLegalParents().contains(selectedTag.getTagName()))
+                    {
+                        tagToolbar.getChildren().get(i).setDisable(false); 
+                    }
+                    else
+                    {
+                        tagToolbar.getChildren().get(i).setDisable(true);
+                    }
+                    i++;
+                }
 		int row = 1;
 		for (String attributeName : keys) {
 		    String attributeValue = selectedTag.getAttribute(attributeName);
