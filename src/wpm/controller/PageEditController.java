@@ -6,7 +6,12 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.web.WebEngine;
 import properties_manager.PropertiesManager;
+import static saf.settings.AppPropertyType.REMOVE_ELEMENT_MESSAGE;
+import static saf.settings.AppPropertyType.REMOVE_ELEMENT_TITLE;
+import static saf.settings.AppPropertyType.SAVE_UNSAVED_WORK_MESSAGE;
+import static saf.settings.AppPropertyType.SAVE_UNSAVED_WORK_TITLE;
 import saf.ui.AppMessageDialogSingleton;
+import saf.ui.AppYesNoCancelDialogSingleton;
 import static wpm.PropertyType.ADD_ELEMENT_ERROR_MESSAGE;
 import static wpm.PropertyType.ADD_ELEMENT_ERROR_TITLE;
 import static wpm.PropertyType.ATTRIBUTE_UPDATE_ERROR_MESSAGE;
@@ -134,12 +139,24 @@ public class PageEditController {
                 }
                 else
                 {
+                    PropertiesManager props = PropertiesManager.getPropertiesManager();
+                    AppYesNoCancelDialogSingleton yesNoDialog = AppYesNoCancelDialogSingleton.getSingleton();
+                    yesNoDialog.show(props.getProperty(REMOVE_ELEMENT_TITLE), props.getProperty(REMOVE_ELEMENT_MESSAGE));
                 //TreeItem newNode = new TreeItem(selectedTag);
-                //selectedItem.getChildren().remove(newNode);
-                    TreeItem parent = (TreeItem) selectedItem.getParent();
-                    selectedItem.getParent().getChildren().remove(selectedItem);
-                    tree.getSelectionModel().select(parent);
-                    selectedItem.setExpanded(true);
+                String selection = yesNoDialog.getSelection();
+
+        // IF THE USER SAID YES, THEN SAVE BEFORE MOVING ON
+                    if (selection.equals(AppYesNoCancelDialogSingleton.YES)) {
+                        //selectedItem.getChildren().remove(newNode);
+                            TreeItem parent = (TreeItem) selectedItem.getParent();
+                            selectedItem.getParent().getChildren().remove(selectedItem);                   
+                            tree.getSelectionModel().select(parent);
+                            selectedItem.setExpanded(true);
+                        }
+                    else
+                    {
+
+                    }
                 }
                // workspace.reloadWorkspace();
             }
@@ -157,7 +174,7 @@ public class PageEditController {
                 {
                     if(arr.get(i).equals(selectedTag.getTagName()))
                     {
-                          System.out.println("should add because parent");
+                          //System.out.println("should add because parent");
                
                 TreeItem newNode = new TreeItem(newTag);
    /*             if(element.getLegalParents().toString().contains(selectedTag.toString()))

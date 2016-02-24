@@ -394,8 +394,8 @@ public class Workspace extends AppWorkspaceComponent {
                 int i = 0;
                 for (HTMLTagPrototype tag : dataManager.getTags())
                 {
-                    System.out.println(tag.getLegalParents());
-                    System.out.println(selectedTag.getTagName());
+                   // System.out.println(tag.getLegalParents());
+                   // System.out.println(selectedTag.getTagName());
                     if(tag.getLegalParents().contains(selectedTag.getTagName()))
                     {
                         tagToolbar.getChildren().get(i).setDisable(false); 
