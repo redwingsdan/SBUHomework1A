@@ -421,6 +421,7 @@ public class Workspace extends AppWorkspaceComponent {
 		    });
 		    row++;
 		}
+                gui.updateToolbarControls(false);
 	    }
 
 	    // LOAD THE CSS
@@ -430,6 +431,7 @@ public class Workspace extends AppWorkspaceComponent {
 	    // THEN FORCE THE CHANGES TO THE TEMP HTML PAGE
 	    FileManager fileManager = (FileManager) app.getFileComponent();
 	    fileManager.exportData(dataManager, TEMP_PAGE);
+            loadTempPage();
 
 	    // WE DON'T WANT TO RESPOND TO EVENTS FORCED BY
 	    // OUR INITIALIZATION SELECTIONS
@@ -451,6 +453,7 @@ public class Workspace extends AppWorkspaceComponent {
 	    URL pageURL = webPageFile.toURI().toURL();
 	    String pagePath = pageURL.toString();
 	    htmlEngine.load(pagePath);
+            System.out.println("PAGE LOADED");
 	} catch (MalformedURLException murle) {
 	    PropertiesManager props = PropertiesManager.getPropertiesManager();
 	    AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();

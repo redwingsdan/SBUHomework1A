@@ -19,6 +19,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
@@ -139,7 +140,8 @@ public class FileManager implements AppFileComponent {
 	nodeData.setNodeIndex(0);
 	nodeData.setParentIndex(-1);
 	JsonObject tagObject = makeTagJsonObject(nodeData, root.getChildren().size());
-	arrayBuilder.add(tagObject);
+//	String str = tagObject.get("tag").toString();
+        arrayBuilder.add(tagObject);
 	
 	// INC THE COUNTER
 	maxNodeCounter++;
@@ -216,7 +218,49 @@ public class FileManager implements AppFileComponent {
      */
     @Override
     public void exportData(AppDataComponent data, String filePath) throws IOException {
-	System.out.println("THIS SHOULD EXPORT THE WEB PAGE TO THE temp DIRECTORY, INCLUDING THE CSS FILE");
+        StringWriter sw = new StringWriter();
+
+	// BUILD THE HTMLTags ARRAY
+	DataManager dataManager = (DataManager)data;
+
+	// THEN THE TREE
+	JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+	TreeItem root = dataManager.getHTMLRoot();
+        HTMLTagPrototype nodeData = (HTMLTagPrototype)root.getValue();
+        
+	nodeData.setNodeIndex(0);
+	nodeData.setParentIndex(-1);
+	JsonObject tagObject = makeTagJsonObject(nodeData, root.getChildren().size());
+        String str = tagObject.get("tag").toString();
+        
+        
+	fillArrayWithTreeTags(root, arrayBuilder);
+	JsonArray nodesArray = arrayBuilder.build();
+        
+        PrintWriter out = new PrintWriter(filePath);
+        
+      //  out.print(str);
+        
+        for(int i =0; i < nodesArray.size(); i++)
+        {
+            JsonObject tag2 = (JsonObject)nodesArray.get(i);
+            String str2 = tag2.get("tag").toString();
+            if(str2.equals("\"Text\""))
+            {
+               
+               str2 = str2.replace("\""," "); 
+            }
+            else
+            {
+                str2 = "<".concat(str2);
+                str2 = str2.replace("\""," ");
+                str2 = str2.concat(">");
+            }
+            //str2.replace('\"', ' ');
+            out.print(str2);
+        }
+  
+        out.close();
     }
     
     /**
@@ -231,9 +275,9 @@ public class FileManager implements AppFileComponent {
      * to the CSS File.
      */
     public void exportCSS(String cssContent, String filePath) throws IOException {
-	PrintWriter out = new PrintWriter(filePath);
-	out.print(cssContent);
-	out.close();
+	//PrintWriter out = new PrintWriter(filePath);
+	//out.print(cssContent);
+	//out.close();
     }
     
     /**
