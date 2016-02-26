@@ -32,7 +32,7 @@ import wpm.gui.Workspace;
  * editing them.
  *
  * @author Richard McKenna
- * @author ?
+ * @author Daniel Peterson
  * @version 1.0
  */
 public class PageEditController {
